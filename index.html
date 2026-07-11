@@ -424,8 +424,8 @@
             <input
                 type="text"
                 id="websiteInput"
-                placeholder="http://localhost:8000 or https://example.com"
-                value="http://127.0.0.1:8000"
+                placeholder="https://google.com"
+                value="https://google.com"
                 spellcheck="false"
             />
             <div class="btn-group">
@@ -786,11 +786,33 @@
                 }
             });
 
+            // --- URL Argument ---
+            function getUrlFromPath() {
+                const path = window.location.pathname;
+                const parts = path.split('/').filter(Boolean);
+                if (parts.length > 0) {
+                    let domain = parts[parts.length - 1];
+                    if (domain && domain !== 'index.html') {
+                        if (!/^https?:\/\//i.test(domain)) {
+                            domain = 'https://' + domain;
+                        }
+                        return domain;
+                    }
+                }
+                return null;
+            }
+
+            const urlFromPath = getUrlFromPath();
+            if (urlFromPath) {
+                websiteInput.value = urlFromPath;
+                addLog(`🔗 Loaded URL from path: ${urlFromPath}`, 'info');
+            }
+
             // --- Init ---
             muteBtn.disabled = true;
             addLog('💡 Enter URL & click Start', 'info');
             addLog('🔔 Alarm loops until stopped/muted', 'info');
-            addLog('🌐 Localhost: use http://127.0.0.1:8000', 'info');
+            addLog('🌐 Use /domain.com in URL to set default', 'info');
 
             // Request notification permission
             if ('Notification' in window && Notification.permission === 'default') {
