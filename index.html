@@ -38,7 +38,9 @@
             margin-bottom: 32px;
             border-bottom: 2px solid #e2e8f0;
             padding-bottom: 20px;
-            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         h1 {
@@ -49,10 +51,8 @@
         }
 
         .logo {
-            position: absolute;
-            right: 0;
-            top: 0;
             height: 45px;
+            flex-shrink: 0;
             filter: invert(1);
             mix-blend-mode: multiply;
         }
@@ -368,10 +368,7 @@
                 padding: 24px;
             }
             .logo {
-                position: static;
                 height: 30px;
-                display: block;
-                margin-top: 8px;
             }
             .input-group {
                 flex-direction: column;
