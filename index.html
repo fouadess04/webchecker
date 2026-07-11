@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Website Availability Monitor Pro</title>
+    <style>
+        /* --- Reset & Base --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* --- Container --- */
+        .container {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 40px;
+            max-width: 680px;
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* --- Header --- */
+        .header {
+            margin-bottom: 32px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #1a202c;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 14px;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        /* --- Input Group --- */
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #1a202c;
+            font-size: 15px;
+            transition: all 0.15s ease;
+            outline: none;
+            min-width: 200px;
+            font-family: 'SF Mono', 'Courier New', monospace;
+        }
+
+        input::placeholder {
+            color: #a0aec0;
+        }
+
+        input:focus {
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+        }
+
+        input:disabled {
+            background: #f7fafc;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* --- Buttons --- */
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+
+        .btn-start {
+            background: #3182ce;
+            color: #ffffff;
+        }
+
+        .btn-start:hover:not(:disabled) {
+            background: #2c5282;
+        }
+
+        .btn-start:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-stop {
+            background: #e53e3e;
+            color: #ffffff;
+        }
+
+        .btn-stop:hover:not(:disabled) {
+            background: #c53030;
+        }
+
+        .btn-mute {
+            background: #edf2f7;
+            color: #2d3748;
+        }
+
+        .btn-mute:hover:not(:disabled) {
+            background: #e2e8f0;
+        }
+
+        .btn-mute.muted {
+            background: #e53e3e;
+            color: #ffffff;
+        }
+
+        .btn-mute.muted:hover {
+            background: #c53030;
+        }
+
+        .btn-mute:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* --- Tip Box --- */
+        .tip-box {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 12px 16px;
+            margin-top: 8px;
+            margin-bottom: 16px;
+            color: #2c5282;
+            font-size: 13px;
+            border-radius: 4px;
+        }
+
+        .tip-box strong {
+            color: #1a365d;
+        }
+
+        /* --- Status Box --- */
+        .status-box {
+            background: #f7fafc;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 4px 24px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #4a5568;
+            font-size: 14px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-label {
+            color: #718096;
+        }
+
+        .status-value {
+            color: #1a202c;
+            font-weight: 600;
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .status-value.success {
+            color: #38a169;
+        }
+
+        .status-value.fail {
+            color: #e53e3e;
+        }
+
+        .status-value.running {
+            color: #d69e2e;
+        }
+
+        /* --- Badges --- */
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge.idle {
+            background: #edf2f7;
+            color: #4a5568;
+        }
+
+        .badge.running {
+            background: #fefcbf;
+            color: #975a16;
+        }
+
+        .badge.success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge.fail {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+
+        .badge.alarm {
+            background: #fed7d7;
+            color: #9b2c2c;
+            animation: pulse-badge 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* --- Log Container --- */
+        .log-container {
+            margin-top: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #1a202c;
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-size: 12px;
+            border: 1px solid #2d3748;
+        }
+
+        .log-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .log-container::-webkit-scrollbar-track {
+            background: #2d3748;
+            border-radius: 3px;
+        }
+
+        .log-container::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 3px;
+        }
+
+        .log-container::-webkit-scrollbar-thumb:hover {
+            background: #718096;
+        }
+
+        .log-entry {
+            padding: 4px 0;
+            color: #a0aec0;
+            border-bottom: 1px solid #2d3748;
+            line-height: 1.5;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-entry.success {
+            color: #68d391;
+        }
+
+        .log-entry.fail {
+            color: #fc8181;
+        }
+
+        .log-entry.info {
+            color: #63b3ed;
+        }
+
+        .log-entry.alarm {
+            color: #fc8181;
+            font-weight: 700;
+            animation: flash-log 0.8s ease-in-out infinite;
+        }
+
+        @keyframes flash-log {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .log-timestamp {
+            color: #4a5568;
+            margin-right: 8px;
+        }
+
+        /* --- Alarm Indicator --- */
+        .alarm-indicator {
+            display: none;
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: #e53e3e;
+            color: #ffffff;
+            padding: 16px 24px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 4px 20px rgba(229, 62, 62, 0.3);
+            z-index: 9999;
+            border: 1px solid #c53030;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alarm-indicator.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(40px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px;
+            }
+            .input-group {
+                flex-direction: column;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+            .status-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0;
+            }
+            .alarm-indicator {
+                top: 12px;
+                right: 12px;
+                left: 12px;
+                text-align: center;
+                font-size: 14px;
+                padding: 12px 16px;
+            }
+        }
+
+        /* --- Utilities --- */
+        .mt-1 { margin-top: 4px; }
+        .mb-1 { margin-bottom: 4px; }
+        .text-muted { color: #718096; }
+        .text-sm { font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <!-- Alarm Indicator -->
+    <div class="alarm-indicator" id="alarmIndicator">
+        🔔 Website is Online!
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔍 Website Monitor</h1>
+            <p class="subtitle">Continuously monitors website availability</p>
+        </div>
+
+        <!-- Input -->
+        <div class="input-group">
+            <input
+                type="text"
+                id="websiteInput"
+                placeholder="http://localhost:8000 or https://example.com"
+                value="http://127.0.0.1:8000"
+                spellcheck="false"
+            />
+            <div class="btn-group">
+                <button id="actionBtn" class="btn-start">Start</button>
+                <button id="muteBtn" class="btn-mute" disabled>🔊 Mute</button>
+            </div>
+        </div>
+
+        <!-- Tip -->
+        <div class="tip-box">
+            💡 <strong>Tip:</strong> For local Python server, use <strong>http://127.0.0.1:8000</strong> or <strong>http://localhost:8000</strong>
+        </div>
+
+        <!-- Status -->
+        <div class="status-box">
+            <div class="status-grid">
+                <div class="status-item">
+                    <span class="status-label">Status</span>
+                    <span class="status-value idle" id="statusText">
+                        <span class="badge idle">Idle</span>
+                    </span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Requests</span>
+                    <span class="status-value" id="requestCount">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Success</span>
+                    <span class="status-value success" id="successCount">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Failures</span>
+                    <span class="status-value fail" id="failCount">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Last Check</span>
+                    <span class="status-value" id="lastCheck">—</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Alarm</span>
+                    <span class="status-value" id="alarmStatus">
+                        <span class="badge idle">Off</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Log -->
+        <div class="log-container" id="logContainer">
+            <div class="log-entry info">
+                <span class="log-timestamp">[--:--:--]</span> Ready to monitor...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // --- DOM References ---
+            const websiteInput = document.getElementById('websiteInput');
+            const actionBtn = document.getElementById('actionBtn');
+            const muteBtn = document.getElementById('muteBtn');
+            const statusText = document.getElementById('statusText');
+            const requestCount = document.getElementById('requestCount');
+            const successCount = document.getElementById('successCount');
+            const failCount = document.getElementById('failCount');
+            const lastCheck = document.getElementById('lastCheck');
+            const alarmStatus = document.getElementById('alarmStatus');
+            const logContainer = document.getElementById('logContainer');
+            const alarmIndicator = document.getElementById('alarmIndicator');
+
+            // --- State ---
+            let isRunning = false;
+            let isMuted = false;
+            let intervalId = null;
+            let alarmIntervalId = null;
+            let isAlarmPlaying = false;
+            let stats = { requests: 0, success: 0, fail: 0 };
+            let firstHit = true;
+            let audioCtx = null;
+            let alarmOscillators = [];
+
+            // --- Audio ---
+            function getAudioContext() {
+                if (!audioCtx) {
+                    audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+                }
+                return audioCtx;
+            }
+
+            function playAlarmSound() {
+                if (isMuted || isAlarmPlaying) return;
+
+                try {
+                    const ctx = getAudioContext();
+                    isAlarmPlaying = true;
+
+                    alarmIndicator.classList.add('show');
+                    alarmStatus.innerHTML = `<span class="badge alarm">🔔 ALARM</span>`;
+
+                    let count = 0;
+
+                    function playBeep() {
+                        if (!isAlarmPlaying || isMuted) return;
+                        if (count >= 30) count = 0;
+
+                        try {
+                            const freqs = [880, 660, 1100];
+                            freqs.forEach((freq, i) => {
+                                setTimeout(() => {
+                                    if (!isAlarmPlaying || isMuted) return;
+                                    try {
+                                        const osc = ctx.createOscillator();
+                                        const gain = ctx.createGain();
+                                        osc.connect(gain);
+                                        gain.connect(ctx.destination);
+                                        osc.frequency.value = freq;
+                                        osc.type = 'square';
+                                        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                                        osc.start(ctx.currentTime);
+                                        osc.stop(ctx.currentTime + 0.1);
+                                        alarmOscillators.push(osc);
+                                    } catch (e) { /* ignore */ }
+                                }, i * 70);
+                            });
+
+                            count++;
+                            alarmIntervalId = setTimeout(playBeep, 450);
+                        } catch (e) {
+                            isAlarmPlaying = false;
+                        }
+                    }
+
+                    playBeep();
+
+                    // Notification
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        new Notification('🔔 Website Online!', {
+                            body: `${websiteInput.value} is now available.`,
+                            requireInteraction: true
+                        });
+                    }
+
+                } catch (e) {
+                    isAlarmPlaying = false;
+                }
+            }
+
+            function stopAlarm() {
+                isAlarmPlaying = false;
+                if (alarmIntervalId) {
+                    clearTimeout(alarmIntervalId);
+                    alarmIntervalId = null;
+                }
+                alarmOscillators.forEach(osc => {
+                    try { osc.stop(); } catch (e) { /* ignore */ }
+                });
+                alarmOscillators = [];
+                alarmIndicator.classList.remove('show');
+                alarmStatus.innerHTML = `<span class="badge idle">Off</span>`;
+
+                if (audioCtx && audioCtx.state === 'running') {
+                    try { audioCtx.close(); } catch (e) { /* ignore */ }
+                    audioCtx = null;
+                }
+            }
+
+            // --- Mute ---
+            muteBtn.addEventListener('click', () => {
+                isMuted = !isMuted;
+                muteBtn.textContent = isMuted ? '🔇 Muted' : '🔊 Mute';
+                muteBtn.classList.toggle('muted', isMuted);
+                if (isMuted) stopAlarm();
+                addLog(isMuted ? '🔇 Sound muted' : '🔊 Sound unmuted', 'info');
+            });
+
+            // --- Check Website ---
+            async function checkWebsite() {
+                let url = websiteInput.value.trim();
+                if (!url) {
+                    addLog('⚠️ Please enter a URL', 'info');
+                    return;
+                }
+
+                // Auto-fix protocol
+                let fullUrl = url;
+                if (!/^https?:\/\//i.test(url)) {
+                    fullUrl = 'https://' + url;
+                }
+
+                // Auto-switch localhost to HTTP
+                const isLocalhost = /localhost|127\.0\.0\.1|0\.0\.0\.0/.test(fullUrl);
+                if (isLocalhost && fullUrl.startsWith('https://')) {
+                    fullUrl = fullUrl.replace('https://', 'http://');
+                }
+
+                stats.requests++;
+                requestCount.textContent = stats.requests;
+
+                const startTime = performance.now();
+
+                try {
+                    await fetch(fullUrl, {
+                        method: 'HEAD',
+                        mode: 'no-cors',
+                        cache: 'no-store',
+                        signal: AbortSignal.timeout(10000)
+                    });
+
+                    const elapsed = (performance.now() - startTime).toFixed(0);
+                    addLog(`✅ ${fullUrl} — OK (${elapsed}ms)`, 'success');
+                    stats.success++;
+                    successCount.textContent = stats.success;
+
+                    statusText.innerHTML = `<span class="badge success">Online</span>`;
+                    lastCheck.textContent = new Date().toLocaleTimeString();
+
+                    if (firstHit) {
+                        firstHit = false;
+                        addLog('🚨 Online! Triggering alarm...', 'alarm');
+                        playAlarmSound();
+
+                        try {
+                            const win = window.open(fullUrl, '_blank');
+                            if (win && !win.closed) {
+                                addLog(`🔗 Opened ${fullUrl}`, 'info');
+                            } else {
+                                addLog('⚠️ Popup blocked. Allow popups.', 'info');
+                            }
+                        } catch (e) {
+                            addLog(`⚠️ ${e.message}`, 'info');
+                        }
+                    }
+
+                } catch (error) {
+                    const elapsed = (performance.now() - startTime).toFixed(0);
+                    let errorMsg = error.name === 'AbortError' ? 'Timeout' : error.message;
+
+                    if (errorMsg.includes('SSL') || errorMsg.includes('TLS') || 
+                        errorMsg.includes('ERR_SSL') || errorMsg.includes('certificate')) {
+                        errorMsg = 'SSL/TLS error — use HTTP for localhost';
+                        addLog(`💡 ${fullUrl} → use HTTP not HTTPS`, 'info');
+                    }
+
+                    addLog(`❌ ${fullUrl} — ${errorMsg} (${elapsed}ms)`, 'fail');
+                    stats.fail++;
+                    failCount.textContent = stats.fail;
+
+                    statusText.innerHTML = `<span class="badge fail">Offline</span>`;
+                    lastCheck.textContent = new Date().toLocaleTimeString();
+
+                    if (isAlarmPlaying) {
+                        stopAlarm();
+                        addLog('🔕 Alarm stopped', 'info');
+                    }
+                    firstHit = true;
+                }
+            }
+
+            // --- Logging ---
+            function addLog(message, type = 'info') {
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                const ts = new Date().toLocaleTimeString();
+                entry.innerHTML = `<span class="log-timestamp">[${ts}]</span> ${message}`;
+                logContainer.appendChild(entry);
+                logContainer.scrollTop = logContainer.scrollHeight;
+
+                while (logContainer.children.length > 300) {
+                    logContainer.removeChild(logContainer.firstChild);
+                }
+            }
+
+            // --- Start / Stop ---
+            function startMonitoring() {
+                if (isRunning) return;
+
+                const url = websiteInput.value.trim();
+                if (!url) {
+                    addLog('⚠️ Enter a URL first', 'info');
+                    websiteInput.focus();
+                    return;
+                }
+
+                stopAlarm();
+
+                firstHit = true;
+                stats = { requests: 0, success: 0, fail: 0 };
+                requestCount.textContent = '0';
+                successCount.textContent = '0';
+                failCount.textContent = '0';
+
+                isRunning = true;
+                actionBtn.textContent = 'Stop';
+                actionBtn.className = 'btn-stop';
+                statusText.innerHTML = `<span class="badge running">Monitoring</span>`;
+                addLog(`▶️ Started: ${url}`, 'info');
+
+                websiteInput.disabled = true;
+                muteBtn.disabled = false;
+
+                checkWebsite();
+                intervalId = setInterval(checkWebsite, 3000);
+            }
+
+            function stopMonitoring() {
+                if (!isRunning) return;
+
+                isRunning = false;
+                if (intervalId) {
+                    clearInterval(intervalId);
+                    intervalId = null;
+                }
+
+                stopAlarm();
+
+                actionBtn.textContent = 'Start';
+                actionBtn.className = 'btn-start';
+                statusText.innerHTML = `<span class="badge idle">Idle</span>`;
+                websiteInput.disabled = false;
+                muteBtn.disabled = true;
+                addLog('⏹️ Stopped', 'info');
+                firstHit = true;
+            }
+
+            function toggleMonitoring() {
+                isRunning ? stopMonitoring() : startMonitoring();
+            }
+
+            // --- Events ---
+            actionBtn.addEventListener('click', toggleMonitoring);
+
+            websiteInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    toggleMonitoring();
+                }
+            });
+
+            // Auto-fix localhost on blur
+            websiteInput.addEventListener('blur', () => {
+                let val = websiteInput.value.trim();
+                if (val && /localhost|127\.0\.0\.1|0\.0\.0\.0/.test(val) && val.startsWith('https://')) {
+                    websiteInput.value = val.replace('https://', 'http://');
+                    addLog('💡 Auto-fixed: https → http for localhost', 'info');
+                }
+            });
+
+            // --- Cleanup ---
+            window.addEventListener('beforeunload', () => {
+                if (intervalId) clearInterval(intervalId);
+                if (alarmIntervalId) clearTimeout(alarmIntervalId);
+                stopAlarm();
+                if (audioCtx) {
+                    try { audioCtx.close(); } catch (e) { /* ignore */ }
+                }
+            });
+
+            // --- Init ---
+            muteBtn.disabled = true;
+            addLog('💡 Enter URL & click Start', 'info');
+            addLog('🔔 Alarm loops until stopped/muted', 'info');
+            addLog('🌐 Localhost: use http://127.0.0.1:8000', 'info');
+
+            // Request notification permission
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+
+            console.log('🔍 Website Monitor Pro initialized');
+        })();
+    </script>
+
+</body>
+</html>
