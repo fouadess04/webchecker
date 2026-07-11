@@ -38,6 +38,7 @@
             margin-bottom: 32px;
             border-bottom: 2px solid #e2e8f0;
             padding-bottom: 20px;
+            position: relative;
         }
 
         h1 {
@@ -45,13 +46,13 @@
             font-size: 24px;
             font-weight: 700;
             letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .logo {
-            height: 32px;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 45px;
             filter: invert(1);
             mix-blend-mode: multiply;
         }
@@ -408,8 +409,9 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1><img src="https://bpublic.vercel.app/assets/blogo.png" alt="Logo" class="logo" /> Website Monitor</h1>
+            <h1>Website Monitor</h1>
             <p class="subtitle">Continuously monitors website availability</p>
+            <img src="https://bpublic.vercel.app/assets/blogo.png" alt="Logo" class="logo" />
         </div>
 
         <!-- Input -->
